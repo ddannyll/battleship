@@ -26,7 +26,11 @@ const Ship = (length, name='defaultShip') => {
         return length
     }
 
-    return {hit, isSunk, getLength}
+    const getName = () => {
+        return name
+    }
+
+    return {hit, isSunk, getLength, getName}
 }
 
 const ShipBuilder = (name) => {
@@ -51,5 +55,13 @@ const SHIP_LENGTHS = {
     patrolBoat: 2
 }
 
+const SHIP = {
+    carrier: 'carrier',
+    battleship: 'battleship',
+    destroyer: 'destroyer',
+    submarine: 'submarine',
+    patrolBoat: 'patrolBoat'
+}
 
-export {ShipBuilder, SHIP_LENGTHS}
+
+export {ShipBuilder, SHIP_LENGTHS, SHIP}

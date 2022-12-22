@@ -3,14 +3,14 @@ import { InvalidOperation } from "./error"
 import Position from "./position"
 import { SHIP_LENGTHS, ShipBuilder } from "./ship"
 
-const States = {
+const STATES = {
     pregame: 0,
     p1turn: 1,
     p2turn: 2
 }
 
 const Gameboard = () => {
-    let state = States.pregame
+    let state = STATES.pregame
     let p1board = []
     let p2board = []
 
@@ -63,10 +63,29 @@ const Gameboard = () => {
         }
     } 
 
+    const isShipAlive = (board, shipName) => {
+        let c = board[1][1]
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[i].length; j++) {
+                const cell = board[i][j] 
+                if (cell.getShip() !== null && 
+                    cell.getShip().getName() === shipName && 
+                    !cell.getShip().isSunk()) {
+                return true
+                }    
+            }
+        }
+        return false
+    } 
+
     const placeShip = (playerId, shipName, position, vertical=false) => {
-        const board = getPlayerBoard(playerId)
-        
-        const shipObj = ShipBuilder(shipName)
+        const board = getPlayerBoard(playerId) // throws Error if not valid playerId
+        const shipObj = ShipBuilder(shipName) // throws TypeError if not valid shipName
+
+        // Confirm ship is not already placed
+        if (isShipAlive(board, shipName)) {
+            throw new InvalidOperation('Ship already exists on the board')
+        }
 
         // get the positions for the entire ship
         const shipPositions = []
@@ -75,11 +94,13 @@ const Gameboard = () => {
                      : shipPositions.push(position.add(Position(i, 0)))
         }
 
-        confirmValidShipPositions(board, shipPositions)
+        confirmValidShipPositions(board, shipPositions) // throws Error if not valid
 
+        // valid ship, put into map
         shipPositions.forEach((pos) => {
             board[pos.getY()][pos.getX()].addShip(shipObj)
         })
+
     }
 
     const attack = () => {

@@ -16,9 +16,15 @@ const Cell = (ship=null) => {
         hasBeenHit = true
     }
     const addShip = (shipObject) => {
+        if (ship !== null) {
+            throw new InvalidOperation('Ship already exists on this cell')
+        }
         ship = shipObject
     }
-    return {hit, isHit, hasShip, addShip}
+    const getShip = () => {
+        return ship
+    }
+    return {hit, isHit, hasShip, addShip, getShip}
 }
 
 export default Cell
