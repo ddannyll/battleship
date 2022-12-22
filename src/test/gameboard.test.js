@@ -16,10 +16,10 @@ describe('pregame', () => {
     test('attack before other player not ready', () => {
         const gameboard = Gameboard()
         gameboard.placeShip(p1id, 'patrolBoat', Position(1, 1))
-        gameboard.placeShip(p1id, 'destroyer', Position(2, 1))
-        gameboard.placeShip(p1id, 'submarine', Position(3, 1))
-        gameboard.placeShip(p1id, 'battleship', Position(4, 1))
-        gameboard.placeShip(p1id, 'carrier', Position(5, 1))
+        gameboard.placeShip(p1id, 'destroyer', Position(1, 2))
+        gameboard.placeShip(p1id, 'submarine', Position(1, 3))
+        gameboard.placeShip(p1id, 'battleship', Position(1, 4))
+        gameboard.placeShip(p1id, 'carrier', Position(1, 5))
         // player 1 has placed all their ships
         gameboard.placeShip(p2id, 'patrolBoat', Position(1, 1))
         // player 1 shouldn't be able to attack player 2 since they are not ready
@@ -29,14 +29,14 @@ describe('pregame', () => {
     test('duplicate ship placement', () => {
         const gameboard = Gameboard()
         gameboard.placeShip(p1id, 'patrolBoat', Position(1, 1))
-        expect(() => {gameboard.placeShip(p1id, 'patrolBoat', Position(2, 1))}).toThrow(InvalidOperation)
+        expect(() => {gameboard.placeShip(p1id, 'patrolBoat', Position(1, 2))}).toThrow(InvalidOperation)
     })
 
     
     test('overlapping ship placement', () => {
         const gameboard = Gameboard()
         gameboard.placeShip(p1id, 'patrolBoat', Position(1, 1), true)
-        expect(() => {gameboard.placeShip(p1id, 'destroyer', Position(2, 1))}).toThrow(InvalidOperation)
+        expect(() => {gameboard.placeShip(p1id, 'destroyer', Position(0, 2))}).toThrow(InvalidOperation)
     })
 
     test('out of bounds placement', () => {
