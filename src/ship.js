@@ -52,4 +52,4 @@ const SHIP_LENGTHS = {
 }
 
 
-export {Ship, ShipBuilder, SHIP_LENGTHS}
+export {ShipBuilder, SHIP_LENGTHS}
