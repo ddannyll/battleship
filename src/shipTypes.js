@@ -20,4 +20,18 @@ const PatrolBoat = () => {
     return Ship(2, 'PatrolBoat')
 }
 
-export {Carrier, Battleship, Destroyer, Submarine, PatrolBoat}
+const ShipBuilder = (name) => {
+    const nameMap = {
+        Carrier: Carrier,
+        Battleship: Battleship,
+        Destroyer: Destroyer,
+        Submarine: Submarine,
+        PatrolBoat: PatrolBoat
+    }
+    if (!name in nameMap) {
+        throw TypeError('Invalid ship name')
+    }
+    return nameMap[name]
+}
+
+export {Carrier, Battleship, Destroyer, Submarine, PatrolBoat, ShipBuilder}
