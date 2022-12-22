@@ -22,7 +22,11 @@ const Ship = (length, name='defaultShip') => {
         return hitPoints < 1
     }
 
-    return {hit, isSunk}
+    const getLength = () => {
+        return length
+    }
+
+    return {hit, isSunk, getLength}
 }
 
 export default Ship
