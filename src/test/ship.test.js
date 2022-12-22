@@ -1,8 +1,6 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import { InvalidOperation } from '../error';
-import Ship from '../ship'
-import { Battleship, Carrier, Destroyer, PatrolBoat , Submarine } from '../shipTypes';
-
+import { Ship, ShipBuilder } from '../ship'
 
 describe('Generic Ship Tests', () => {
     test('Throws error on invalid ship length', () => {
@@ -41,10 +39,10 @@ describe('Generic Ship Tests', () => {
 
 describe('Custom Ship Tests', () => {
     test('Ship Length', () => {
-        expect(Carrier().getLength()).toBe(5)
-        expect(Battleship().getLength()).toBe(4)
-        expect(Submarine().getLength()).toBe(3)
-        expect(Destroyer().getLength()).toBe(3)
-        expect(PatrolBoat().getLength()).toBe(2)
+        expect(ShipBuilder('carrier').getLength()).toBe(5)
+        expect(ShipBuilder('battleship').getLength()).toBe(4)
+        expect(ShipBuilder('destroyer').getLength()).toBe(3)
+        expect(ShipBuilder('submarine').getLength()).toBe(3)
+        expect(ShipBuilder('patrolBoat').getLength()).toBe(2)
     })
 })

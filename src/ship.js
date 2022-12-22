@@ -29,4 +29,27 @@ const Ship = (length, name='defaultShip') => {
     return {hit, isSunk, getLength}
 }
 
-export default Ship
+const ShipBuilder = (name) => {
+    const nameMap = {
+        carrier: () => {return Ship(SHIP_LENGTHS['carrier'], 'carrier')},
+        battleship: () => {return Ship(SHIP_LENGTHS['battleship'], 'battleship')},
+        destroyer: () => {return Ship(SHIP_LENGTHS['destroyer'], 'destroyer')},
+        submarine: () => {return Ship(SHIP_LENGTHS['submarine'], 'submarine')},
+        patrolBoat: () => {return Ship(SHIP_LENGTHS['patrolBoat'], 'patrolBoat')}
+    }
+    if (!name in nameMap) {
+        throw TypeError('Invalid ship name')
+    }
+    return nameMap[name]()
+}
+
+const SHIP_LENGTHS = {
+    carrier: 5, 
+    battleship: 4,
+    destroyer: 3,
+    submarine: 3,
+    patrolBoat: 2
+}
+
+
+export {Ship, ShipBuilder, SHIP_LENGTHS}
