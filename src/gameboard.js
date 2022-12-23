@@ -16,6 +16,13 @@ const Gameboard = () => {
 
     initBoards()
 
+    function resetGame () {
+        p1board = []
+        p2board = []
+        state = STATES.pregame
+        initBoards()
+    }
+
     function initBoards () {
         for (let i = 0; i < 10; i++) {
             p1board.push([])
@@ -107,7 +114,7 @@ const Gameboard = () => {
         throw new InvalidOperation('test')
     }
 
-    return {placeShip, attack}
+    return {placeShip, attack, resetGame}
 
 }
 

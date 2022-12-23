@@ -46,3 +46,12 @@ describe('pregame', () => {
         expect(() => {gameboard.placeShip(p1id, 'submarine', Position(8, 8), true)}).toThrow(InvalidOperation)
     })
 })
+
+describe('game', () => {
+    let gameboard = Gameboard()
+
+    beforeEach( () => {
+        gameboard.resetGame()
+    })
+    test('')
+})
