@@ -10,7 +10,7 @@ const Cell = (ship=null) => {
         if (isHit()) {
             throw new InvalidOperation('Cannot hit an already hit cell')
         }
-        if ('hit' in ship && typeof ship.hit === 'function') {
+        if (ship !== null && 'hit' in ship && typeof ship.hit === 'function') {
             ship.hit()
         }
         hasBeenHit = true
