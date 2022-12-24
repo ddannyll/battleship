@@ -1,4 +1,5 @@
-import { InvalidOperation } from "./error"
+import Cell from "./cell.js"
+import { InvalidOperation } from "./error.js"
 
 const Ship = (length, name='defaultShip') => {
     if (!Number.isInteger(length) || length < 1) {

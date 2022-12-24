@@ -2,16 +2,17 @@
   "name": "battleship",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "test": "jest",
-    "build": "webpack",
     "watch-jest": "jest --watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.20.5",
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
     "babel-jest": "^29.3.1",
     "html-webpack-plugin": "^5.5.0",

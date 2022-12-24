@@ -1,6 +1,6 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { InvalidOperation } from '../error';
-import { ShipBuilder } from '../ship'
+import { InvalidOperation } from '../error.js';
+import { ShipBuilder } from '../ship.js'
 
 describe('Generic Ship Tests', () => {
     test('Not sunk on creation', () => {

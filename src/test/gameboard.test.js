@@ -1,9 +1,9 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { InvalidOperation } from '../error';
-import { SHIP } from '../ship';
-import Gameboard from '../gameboard';
-import Position from '../position';
 import _ from 'lodash';
+import { InvalidOperation } from '../error.js';
+import { SHIP } from '../ship.js';
+import Gameboard from '../gameboard.js';
+import Position from '../position.js';
 
 const p1id = 1
 const p2id = 2

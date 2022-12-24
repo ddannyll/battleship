@@ -1,7 +1,8 @@
-import Cell from "./cell"
-import { InvalidOperation } from "./error"
-import Position from "./position"
-import { SHIP_LENGTHS, ShipBuilder, SHIP } from "./ship"
+import Cell from "./cell.js"
+import { InvalidOperation } from "./error.js"
+import Position from "./position.js"
+import { SHIP_LENGTHS, ShipBuilder, SHIP } from "./ship.js"
+
 
 const STATES = {
     pregame: 0,
