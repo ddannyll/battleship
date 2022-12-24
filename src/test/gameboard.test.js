@@ -53,7 +53,7 @@ describe('game', () => {
     let gameboard
 
     const getShell = (array, position) => {
-        for (element of array) {
+        for (let element of array) {
             if (element.x == position.getX() && element.y == position.getY()) {
                 return element
             }
@@ -73,6 +73,21 @@ describe('game', () => {
         gameboard.placeShip(p2id, SHIP.submarine, Position(0,2))
         gameboard.placeShip(p2id, SHIP.battleship, Position(0,3))
         gameboard.placeShip(p2id, SHIP.carrier, Position(0,4))
+    })
+
+    test('Correct ID and Turn', () => {
+        let p1response = gameboard.getResponse(p1id)
+        let p2response = gameboard.getResponse(p2id)
+        expect(p1response.player).toBe(p1id)
+        expect(p2response.player).toBe(p2id)
+        expect(p1response.attackTurn).toBe(true)
+        expect(p2response.attackTurn).toBe(false)
+        p1response = gameboard.attack(p1id, Position(0,0))
+        expect(p1response.attackTurn).toBe(false)
+        p2response = gameboard.getResponse(p2id)
+        expect(p2response.attackTurn).toBe(true)
+        p2response = gameboard.attack(p2id, Position(0,0))
+        expect(p1response.attackTurn).toBe(false)
     })
 
 
@@ -100,5 +115,4 @@ describe('game', () => {
         p2response = gameboard.getResponse(p2id)
         expect(p2response.board.ships.patrolBoat.alive).toBe(false)
     })
-
 })
