@@ -1,0 +1,36 @@
+{
+    "board": {
+        "shells": [
+            {
+                "x": 4,
+                "y": 2,
+                "hitShip": true
+            }
+        ],
+        "ships": {
+            "patrolBoat": {
+                "positions": [
+                    {
+                        "x": 4,
+                        "y": 2
+                    },
+                    {
+                        "x": 5,
+                        "y": 2
+                    }
+                ],
+                "alive": true
+            }
+        }
+    },
+    "enemyBoard": {
+        "shells": [
+            {
+                "x": 4,
+                "y": 2,
+                "hitShip": false
+            }
+        ]
+    }
+
+}

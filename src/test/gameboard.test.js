@@ -1,7 +1,9 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import { InvalidOperation } from '../error';
+import { SHIP } from '../ship';
 import Gameboard from '../gameboard';
 import Position from '../position';
+import _ from 'lodash';
 
 const p1id = 1
 const p2id = 2
@@ -48,10 +50,55 @@ describe('pregame', () => {
 })
 
 describe('game', () => {
-    let gameboard = Gameboard()
+    let gameboard
+
+    const getShell = (array, position) => {
+        for (element of array) {
+            if (element.x == position.getX() && element.y == position.getY()) {
+                return element
+            }
+        }
+        return null
+    }
 
     beforeEach( () => {
-        gameboard.resetGame()
+        gameboard = Gameboard()
+        gameboard.placeShip(p1id, SHIP.patrolBoat, Position(0,0))
+        gameboard.placeShip(p1id, SHIP.destroyer, Position(0,1))
+        gameboard.placeShip(p1id, SHIP.submarine, Position(0,2))
+        gameboard.placeShip(p1id, SHIP.battleship, Position(0,3))
+        gameboard.placeShip(p1id, SHIP.carrier, Position(0,4))
+        gameboard.placeShip(p2id, SHIP.patrolBoat, Position(0,0))
+        gameboard.placeShip(p2id, SHIP.destroyer, Position(0,1))
+        gameboard.placeShip(p2id, SHIP.submarine, Position(0,2))
+        gameboard.placeShip(p2id, SHIP.battleship, Position(0,3))
+        gameboard.placeShip(p2id, SHIP.carrier, Position(0,4))
     })
-    test('')
+
+
+    test('Hit Registration', () => {
+        let p1response = gameboard.attack(p1id, Position(0, 0))
+        expect(getShell(p1response.enemyBoard.shells, Position(0, 0)).hitShip).toBe(true)
+        let p2response = gameboard.attack(p2id, Position(9,9))
+        expect(getShell(p2response.board.shells, Position(0, 0)).hitShip).toBe(true)
+        expect(getShell(p2response.enemyBoard.shells, Position(9, 9)).hitShip).toBe(false)
+    })
+
+    test('Stop placement of more ships', () => {
+        // Sink p2 patrol boat
+        gameboard.attack(p1id, Position(0, 0))
+        gameboard.attack(p2id, Position(0, 0))
+        gameboard.attack(p1id, Position(1, 0))
+        expect(() => {gameboard.placeShip(p2id, SHIP.patrolBoat, Position(8,8))}).toThrow(InvalidOperation)
+    })
+
+    test('Ship Sinking', () => {
+        gameboard.attack(p1id, Position(0, 0))
+        let p2response = gameboard.attack(p2id, Position(0, 0))
+        expect(p2response.board.ships.patrolBoat.alive).toBe(true)
+        gameboard.attack(p1id, Position(1, 0))
+        p2response = gameboard.getResponse(p2id)
+        expect(p2response.board.ships.patrolBoat.alive).toBe(false)
+    })
+
 })

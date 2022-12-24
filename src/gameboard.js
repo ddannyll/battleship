@@ -1,7 +1,7 @@
 import Cell from "./cell"
 import { InvalidOperation } from "./error"
 import Position from "./position"
-import { SHIP_LENGTHS, ShipBuilder } from "./ship"
+import { SHIP_LENGTHS, ShipBuilder, SHIP } from "./ship"
 
 const STATES = {
     pregame: 0,
@@ -17,32 +17,40 @@ const Gameboard = () => {
     initBoards()
 
     function resetGame () {
-        p1board = []
-        p2board = []
         state = STATES.pregame
         initBoards()
     }
 
     function initBoards () {
         for (let i = 0; i < 10; i++) {
-            p1board.push([])
-            p2board.push([])
+            p1board[i] = []
+            p2board[i] = []
             for (let j = 0; j < 10; j++) {
-                p1board[i].push(Cell())
-                p2board[i].push(Cell())
+                p1board[i][j] = Cell()
+                p2board[i][j] = Cell()
             }
         }
     }
 
     const getPlayerBoard = (playerId) => {
-        if (playerId == 1) {
+        if (playerId === 1) {
             return p1board
         }
-        if (playerId == 2) {
+        if (playerId === 2) {
             return p2board
         }
         throw new Error('invalid id')
     }
+
+    const getEnemyBoard = (playerId) => {
+        if (playerId === 1) {
+            return p2board
+        }
+        if (playerId === 2) {
+            return p1board
+        }
+        throw new Error('invalid id')
+    } 
 
     const isPlaceableAtBoardPosition = (board, position) => {
         let cell
@@ -56,18 +64,24 @@ const Gameboard = () => {
         return !(cell === undefined) && !cell.hasShip()
     }
 
-    const confirmValidShipPositions = (board, shipPositions) => {
+    const isValidShipPlacement = (board, shipPositions) => {
         if (shipPositions.length === 0) {
-            throw new InvalidOperation('Invalid placement of ship')
+            return false
         }
 
         const validPlace = shipPositions
             .map((pos) => isPlaceableAtBoardPosition(board, pos))
             .reduce((prev, curr) => prev && curr)
 
-        if (!validPlace) {
-            throw new InvalidOperation('Invalid placement of ship')
+        return validPlace
+    } 
+
+    const isPositionOnBoard = (position) => {
+        if (position.getX() < 0 || position.getX() > 9 ||
+            position.getY() < 0 || position.getY() > 9) {
+            return false
         }
+        return true
     } 
 
     const isShipAlive = (board, shipName) => {
@@ -86,6 +100,10 @@ const Gameboard = () => {
     } 
 
     const placeShip = (playerId, shipName, position, vertical=false) => {
+        if (state !== STATES.pregame) {
+            throw new InvalidOperation('Must be in pregame to place ships')
+        }
+
         const board = getPlayerBoard(playerId) // throws Error if not valid playerId
         const shipObj = ShipBuilder(shipName) // throws TypeError if not valid shipName
 
@@ -101,17 +119,112 @@ const Gameboard = () => {
                      : shipPositions.push(position.add(Position(i, 0)))
         }
 
-        confirmValidShipPositions(board, shipPositions) // throws Error if not valid
+        if (!isValidShipPlacement(board, shipPositions)) {
+            throw new InvalidOperation('invalid ship placement')
+        } 
 
         // valid ship, put into map
         shipPositions.forEach((pos) => {
             board[pos.getY()][pos.getX()].addShip(shipObj)
         })
 
+        // check if if all the ships are on the map to start game
+        let shipsToPlace = new Set(Object.keys(SHIP))
+        board.forEach(col => {
+            col.forEach(cell => {
+                if (cell.getShip() !== null) {
+                    shipsToPlace.delete(cell.getShip().getName())
+                }
+            })
+        })
+        let enemyShipsToPlace = new Set(Object.keys(SHIP))
+        getEnemyBoard(playerId).forEach(col => {
+            col.forEach(cell => {
+                if (cell.getShip() !== null) {
+                    enemyShipsToPlace.delete(cell.getShip().getName())
+                }
+            })
+        })
+        if (shipsToPlace.size === 0 && enemyShipsToPlace.size === 0) {
+            state = STATES.p1turn
+        }
     }
 
-    const attack = () => {
-        throw new InvalidOperation('test')
+    const attack = (playerId, position) => {
+        if (!(playerId === 1 && state === STATES.p1turn) ||
+            !(playerId === 2 && state === STATES.p2turn)) {
+            throw new InvalidOperation('Cannot attack when it is not your turn')
+        }
+        
+        let board = getEnemyBoard(position)
+        if (!isPositionOnBoard) {
+            throw new InvalidOperation('Invalid Position')
+        }
+        board[position.getY()][position.getX()].hit()
+        
+        if (state === STATES.p1turn) {
+            state = STATES.p2turn
+        } else {
+            state = STATES.p1turn
+        }
+
+        return getResponse(playerId)
+    }
+
+    const getResponse = (playerId) => {
+        const board = getPlayerBoard(playerId)
+        const response = {
+            board: {
+                shells: [],
+                ships: {}
+            },
+            enemyBoard: {
+                shells:[]
+            }
+        }
+
+        // Go through player board and create response
+        board.forEach((col, y) => {
+            col.forEach((cell, x) => {
+                // Shell object
+                if (cell.isHit()) {
+                    response.board.shells.push({
+                        x: x,
+                        y: y,
+                        hitShip: cell.hasShip()
+                    })
+                }
+                // Ships object
+                const ship = cell.getShip()
+                if (ship !== null) {
+                    let responseShip
+                    if (response.board.ships[ship.getName()] === undefined) {
+                        response.board.ships[ship.getName()] = {positions:[]}
+                    } else {
+                        responseShip = response.board.ships[ship.getName()]
+                    }
+                    responseShip.alive = !ship.isSunk()
+                    responseShip.positions.push({
+                        x: x,
+                        y: y
+                    })
+                }
+            })
+        })
+
+        // Repeat for enemy board
+        const enemyBoard = getEnemyBoard(playerId) 
+        enemyBoard.forEach((col, y) => {
+            col.forEach((cell, x) => {
+                if (cell.isHit()) {
+                    resetGame.enemyBoard.shells.push({
+                        x: x,
+                        y: y,
+                        hitShip: cell.hasShip()
+                    })
+                }
+            })
+        })
     }
 
     return {placeShip, attack, resetGame}
