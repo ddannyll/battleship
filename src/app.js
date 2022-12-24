@@ -4,7 +4,7 @@ import Position from './position.js';
 
 
 const app = express()
-const PORT = 7777
+const PORT = process.env.PORT
 
 let gameboard = Gameboard()
 
