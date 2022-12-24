@@ -145,18 +145,21 @@ const Gameboard = () => {
                 }
             })
         })
+
         if (shipsToPlace.size === 0 && enemyShipsToPlace.size === 0) {
             state = STATES.p1turn
         }
+
+        return getResponse(playerId)
     }
 
     const attack = (playerId, position) => {
-        if (!(playerId === 1 && state === STATES.p1turn) ||
+        if (!(playerId === 1 && state === STATES.p1turn) &&
             !(playerId === 2 && state === STATES.p2turn)) {
             throw new InvalidOperation('Cannot attack when it is not your turn')
         }
         
-        let board = getEnemyBoard(position)
+        let board = getEnemyBoard(playerId)
         if (!isPositionOnBoard) {
             throw new InvalidOperation('Invalid Position')
         }
@@ -180,7 +183,10 @@ const Gameboard = () => {
             },
             enemyBoard: {
                 shells:[]
-            }
+            },
+            player: playerId,
+            attackTurn: playerId === state 
+            // TODO:  want to change later for player ids other than 1 or 2
         }
 
         // Go through player board and create response
@@ -200,9 +206,8 @@ const Gameboard = () => {
                     let responseShip
                     if (response.board.ships[ship.getName()] === undefined) {
                         response.board.ships[ship.getName()] = {positions:[]}
-                    } else {
-                        responseShip = response.board.ships[ship.getName()]
                     }
+                    responseShip = response.board.ships[ship.getName()]
                     responseShip.alive = !ship.isSunk()
                     responseShip.positions.push({
                         x: x,
@@ -217,7 +222,7 @@ const Gameboard = () => {
         enemyBoard.forEach((col, y) => {
             col.forEach((cell, x) => {
                 if (cell.isHit()) {
-                    resetGame.enemyBoard.shells.push({
+                    response.enemyBoard.shells.push({
                         x: x,
                         y: y,
                         hitShip: cell.hasShip()
@@ -225,9 +230,11 @@ const Gameboard = () => {
                 }
             })
         })
+
+        return response
     }
 
-    return {placeShip, attack, resetGame}
+    return {placeShip, attack, resetGame, getResponse}
 
 }
 
