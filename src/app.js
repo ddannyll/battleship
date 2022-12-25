@@ -30,7 +30,7 @@ app.post('/attack', (req, res) => {
 })
 
 app.get('/response/:playerId', (req, res) => {
-    const playerId = req.params.playerId
+    const playerId = parseInt(req.params.playerId)
     res.send(gameboard.getResponse(playerId))
 })
 
