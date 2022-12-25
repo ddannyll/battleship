@@ -34,6 +34,10 @@ app.get('/response', (req, res) => {
     res.send(gameboard.getResponse(playerId))
 })
 
+app.delete('/reset', (req, res) => {
+    res.send(gameboard.resetGame())
+})
+
 app.listen(PORT, () => {
     console.log("Battleship running on port " + PORT);
 })

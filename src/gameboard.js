@@ -20,6 +20,7 @@ const Gameboard = () => {
     function resetGame () {
         state = STATES.pregame
         initBoards()
+        return getResponse()
     }
 
     function initBoards () {
@@ -185,7 +186,7 @@ const Gameboard = () => {
             enemyBoard: {
                 shells:[]
             },
-            player: playerId,
+            playerId: playerId,
             attackTurn: playerId === state 
             // TODO:  want to change later for player ids other than 1 or 2
         }
