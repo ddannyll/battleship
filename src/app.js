@@ -29,8 +29,8 @@ app.post('/attack', (req, res) => {
     res.send(gameboard.attack(playerId, position))
 })
 
-app.get('/response', (req, res) => {
-    const playerId = req.body.playerId
+app.get('/response/:playerId', (req, res) => {
+    const playerId = req.params.playerId
     res.send(gameboard.getResponse(playerId))
 })
 
