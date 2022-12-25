@@ -1,6 +1,7 @@
 import express from 'express';
 import Gameboard from './gameboard.js';
 import Position from './position.js';
+import cors from 'cors'
 
 
 const app = express()
@@ -10,6 +11,9 @@ let gameboard = Gameboard()
 
 
 app.use(express.json()) // converts body to json
+app.use(cors({
+    origin: '*'
+}))
 
 const buildPositionObject = (position) => {
     return Position(position.x, position.y)
