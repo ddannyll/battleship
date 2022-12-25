@@ -17,10 +17,10 @@ const Gameboard = () => {
 
     initBoards()
 
-    function resetGame () {
+    function resetGame (playerId) {
         state = STATES.pregame
         initBoards()
-        return getResponse()
+        return getResponse(playerId)
     }
 
     function initBoards () {

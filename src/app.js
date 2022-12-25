@@ -6,7 +6,7 @@ import { InvalidOperation } from './error.js';
 
 
 const app = express()
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 4200
 
 let gameboard = Gameboard()
 
@@ -22,21 +22,27 @@ const buildPositionObject = (position) => {
 }
 
 app.post('/place', (req, res) => {
-    console.log(req.body);
     const playerId = req.body.playerId
     const shipName = req.body.shipName
     const position = buildPositionObject(req.body.position)
     const vertical = req.body.vertical || false
     try {
         res.send(gameboard.placeShip(playerId, shipName, position, vertical))
-    } catch (InvalidOperation) {
-        res.status(400).send(InvalidOperation)
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message)
     }
 })
 app.post('/attack', (req, res) => {
+    console.log(req.body);
     const playerId = req.body.playerId
     const position = buildPositionObject(req.body.position)
-    res.send(gameboard.attack(playerId, position))
+    try {
+        res.send(gameboard.attack(playerId, position))
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message)
+    }
 })
 
 app.get('/response/:playerId', (req, res) => {
@@ -45,7 +51,14 @@ app.get('/response/:playerId', (req, res) => {
 })
 
 app.delete('/reset', (req, res) => {
-    res.send(gameboard.resetGame())
+    const playerId = req.body.playerId
+    console.log(req.body);
+    try {
+        res.send(gameboard.resetGame(playerId))
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message)
+    }
 })
 
 app.listen(PORT, () => {
