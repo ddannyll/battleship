@@ -187,7 +187,8 @@ const Gameboard = () => {
                 shells:[]
             },
             playerId: playerId,
-            attackTurn: playerId === state 
+            attackTurn: playerId === state,
+            state: state === STATES.pregame ? 'place' : 'battle'
             // TODO:  want to change later for player ids other than 1 or 2
         }
 

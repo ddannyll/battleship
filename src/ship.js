@@ -42,9 +42,10 @@ const ShipBuilder = (name) => {
         submarine: () => {return Ship(SHIP_LENGTHS['submarine'], 'submarine')},
         patrolBoat: () => {return Ship(SHIP_LENGTHS['patrolBoat'], 'patrolBoat')}
     }
-    if (!name in nameMap) {
+    if (!(name in nameMap)) {
         throw TypeError('Invalid ship name')
     }
+    console.log(name);
     return nameMap[name]()
 }
 

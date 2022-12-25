@@ -2,6 +2,7 @@ import express from 'express';
 import Gameboard from './gameboard.js';
 import Position from './position.js';
 import cors from 'cors'
+import { InvalidOperation } from './error.js';
 
 
 const app = express()
@@ -9,10 +10,11 @@ const PORT = process.env.PORT
 
 let gameboard = Gameboard()
 
-
-app.use(express.json()) // converts body to json
 app.use(cors({
     origin: '*'
+}))
+app.use(express.json({
+    type:['application/json']
 }))
 
 const buildPositionObject = (position) => {
@@ -20,13 +22,17 @@ const buildPositionObject = (position) => {
 }
 
 app.post('/place', (req, res) => {
+    console.log(req.body);
     const playerId = req.body.playerId
     const shipName = req.body.shipName
     const position = buildPositionObject(req.body.position)
     const vertical = req.body.vertical || false
-    res.send(gameboard.placeShip(playerId, shipName, position, vertical))
+    try {
+        res.send(gameboard.placeShip(playerId, shipName, position, vertical))
+    } catch (InvalidOperation) {
+        res.status(400).send(InvalidOperation)
+    }
 })
-
 app.post('/attack', (req, res) => {
     const playerId = req.body.playerId
     const position = buildPositionObject(req.body.position)
