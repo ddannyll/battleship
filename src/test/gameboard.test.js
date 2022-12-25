@@ -78,8 +78,8 @@ describe('game', () => {
     test('Correct ID and Turn', () => {
         let p1response = gameboard.getResponse(p1id)
         let p2response = gameboard.getResponse(p2id)
-        expect(p1response.player).toBe(p1id)
-        expect(p2response.player).toBe(p2id)
+        expect(p1response.playerId).toBe(p1id)
+        expect(p2response.playerId).toBe(p2id)
         expect(p1response.attackTurn).toBe(true)
         expect(p2response.attackTurn).toBe(false)
         p1response = gameboard.attack(p1id, Position(0,0))
