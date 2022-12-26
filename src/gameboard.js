@@ -1,3 +1,4 @@
+import _ from "lodash"
 import Cell from "./cell.js"
 import { InvalidOperation, BadParams, ApiError } from "./error/apiError.js"
 import Position from "./position.js"
@@ -7,13 +8,15 @@ import { SHIP_LENGTHS, ShipBuilder, SHIP } from "./ship.js"
 const STATES = {
     pregame: 0,
     p1turn: 1,
-    p2turn: 2
+    p2turn: 2,
+    finish: 3
 }
 
 const Gameboard = () => {
     let state = STATES.pregame
     let p1board = []
     let p2board = []
+    let winner = null
 
     initBoards()
 
@@ -176,15 +179,32 @@ const Gameboard = () => {
             throw new InvalidOperation('Invalid Position')
         }
         board[position.getY()][position.getX()].hit()
+
+        // check for winner
+        if (Object.keys(SHIP)
+            .map(shipName => isShipAlive(board, shipName))
+            .every(alive => !alive)) {
+            winner = playerId
+            state = STATES.finish
+        } else {
+            state = state === STATES.p1turn ? STATES.p2turn : STATES.p1turn
+        }
         
-
-        state = state === STATES.p1turn ? STATES.p2turn : STATES.p1turn
-
         return getResponse(playerId)
     }
 
     const getResponse = (playerId) => {
         const board = getPlayerBoard(playerId)
+
+        let responseState
+        if (state === STATES.pregame) {
+            responseState = 'place'
+        } else if (state === STATES.p1turn || state === STATES.p2turn) {
+            responseState = 'battle'
+        } else {
+            responseState = 'finish'
+        }
+
         const response = {
             board: {
                 shells: [],
@@ -195,8 +215,9 @@ const Gameboard = () => {
             },
             playerId: playerId,
             attackTurn: playerId === state,
-            state: state === STATES.pregame ? 'place' : 'battle'
             // TODO:  want to change later for player ids other than 1 or 2
+            state: responseState,
+            winner: winner
         }
 
         // Go through player board and create response

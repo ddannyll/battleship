@@ -115,4 +115,20 @@ describe('game', () => {
         p2response = gameboard.getResponse(p2id)
         expect(p2response.board.ships.patrolBoat.alive).toBe(false)
     })
+
+    test('Player One Win', () => {
+        let p2response = gameboard.getResponse(p2id)
+        let shipPositions = Object.values(p2response.board.ships).map(ship => ship.positions)
+        shipPositions = _.flatten(shipPositions)
+        shipPositions.forEach(position => {
+            gameboard.attack(p1id, Position(position.x, position.y))
+            try {
+                gameboard.attack(p2id, Position(position.x, position.y))
+            } catch {}
+        })
+        expect(gameboard.getResponse(p1id).state).toBe('finish')
+        expect(gameboard.getResponse(p2id).state).toBe('finish')
+        expect(gameboard.getResponse(p2id).winner).toBe(p1id)
+        expect(gameboard.getResponse(p1id).winner).toBe(p1id)
+    })
 })
