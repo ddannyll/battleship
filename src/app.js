@@ -17,9 +17,6 @@ app.use(express.json({
     type:['application/json']
 }))
 
-const buildPositionObject = (position) => {
-    return Position(position.x, position.y)
-}
 
 app.use((req, res, next) => {
     console.log(req.path);
@@ -29,19 +26,19 @@ app.use((req, res, next) => {
 app.post('/place', (req, res, next) => {
     const playerId = req.body.playerId
     const shipName = req.body.shipName
-    const position = buildPositionObject(req.body.position)
+    const position = req.body.position
     const vertical = req.body.vertical || false
     try {
-        res.send(gameboard.placeShip(playerId, shipName, position, vertical))
+        res.send(gameboard.placeShip(playerId, shipName, Position(position.x, position.y), vertical))
     } catch (error) {
         next(error)
     }
 })
 app.post('/attack', (req, res, next) => {
     const playerId = req.body.playerId
-    const position = buildPositionObject(req.body.position)
+    const position = req.body.position
     try {
-        res.send(gameboard.attack(playerId, position))
+        res.send(gameboard.attack(playerId, Position(position.x, position.y)))
     } catch (error) {
         next(error)
     }
