@@ -44,7 +44,7 @@ const Gameboard = () => {
         if (playerId === 2) {
             return p2board
         }
-        throw new BadRequest('invalid id')
+        throw new BadParams('invalid id')
     }
 
     const getEnemyBoard = (playerId) => {
@@ -109,13 +109,13 @@ const Gameboard = () => {
             throw new InvalidOperation('Must be in pregame to place ships')
         }
 
-        const board = getPlayerBoard(playerId) // throws BadRequest if not valid playerId
+        const board = getPlayerBoard(playerId) // throws BadParams if not valid playerId
         let shipObj
         try {
             shipObj = ShipBuilder(shipName) 
         } catch (err) {
             if (err instanceof TypeError) {
-                throw new BadRequest(err.message)
+                throw new BadParams(err.message)
             } else {
                 throw err
             }
