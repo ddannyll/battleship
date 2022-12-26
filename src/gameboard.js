@@ -1,5 +1,5 @@
 import Cell from "./cell.js"
-import { InvalidOperation, BadRequest, ApiError } from "./error/apiError"
+import { InvalidOperation, BadRequest, ApiError } from "./error/apiError.js"
 import Position from "./position.js"
 import { SHIP_LENGTHS, ShipBuilder, SHIP } from "./ship.js"
 

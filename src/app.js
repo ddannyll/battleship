@@ -2,7 +2,7 @@ import express from 'express';
 import Gameboard from './gameboard.js';
 import Position from './position.js';
 import cors from 'cors'
-import { InvalidOperation } from './error/error.js';
+import { InvalidOperation, ApiError, BadRequest } from './error/apiError.js';
 
 
 const app = express()
@@ -43,7 +43,6 @@ app.post('/attack', (req, res, next) => {
     try {
         res.send(gameboard.attack(playerId, position))
     } catch (error) {
-        console.error(error.message);
         next(error)
     }
 })

@@ -1,4 +1,4 @@
-import { InvalidOperation } from "./error/apiError"
+import { InvalidOperation } from "./error/apiError.js"
 
 const Cell = (ship=null) => {
     let hasBeenHit = false
