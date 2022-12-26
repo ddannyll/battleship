@@ -61,7 +61,7 @@ app.delete('/reset', (req, res) => {
 
 app.use((err, req, res, next) => {
     console.error(err)
-    if (err instanceof InvalidOperation) {
+    if (err instanceof ApiError) {
         console.log('sending 400');
         res.status(400).json(err.message)
     } else {
