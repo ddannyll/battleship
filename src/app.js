@@ -2,7 +2,7 @@ import express from 'express';
 import Gameboard from './gameboard.js';
 import Position from './position.js';
 import cors from 'cors'
-import { InvalidOperation, ApiError, BadRequest } from './error/apiError.js';
+import { InvalidOperation, ApiError, BadParams } from './error/apiError.js';
 
 
 const app = express()

@@ -11,10 +11,10 @@ class InvalidOperation extends ApiError {
     }
 }
 
-class BadRequest extends ApiError {
+class BadParams extends ApiError {
     constructor(message) {
         super(message, 'BadRequest')
     }
 }
 
-export {ApiError, InvalidOperation, BadRequest}
+export {ApiError, InvalidOperation, BadParams}

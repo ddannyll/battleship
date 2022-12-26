@@ -1,5 +1,5 @@
 import Cell from "./cell.js"
-import { InvalidOperation, BadRequest, ApiError } from "./error/apiError.js"
+import { InvalidOperation, BadParams, ApiError } from "./error/apiError.js"
 
 const Ship = (length, name='defaultShip') => {
     if (!Number.isInteger(length) || length < 1) {

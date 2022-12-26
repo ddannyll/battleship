@@ -1,5 +1,5 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { ApiError, InvalidOperation, BadRequest } from '../error/apiError.js';
+import { ApiError, InvalidOperation, BadParams } from '../error/apiError.js';
 import { ShipBuilder } from '../ship.js'
 
 describe('Generic Ship Tests', () => {
