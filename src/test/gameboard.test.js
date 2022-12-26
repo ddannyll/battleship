@@ -1,6 +1,6 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import _ from 'lodash';
-import { InvalidOperation } from '../error.js';
+import { ApiError, InvalidOperation, BadRequest } from '../error/apiError.js';
 import { SHIP } from '../ship.js';
 import Gameboard from '../gameboard.js';
 import Position from '../position.js';

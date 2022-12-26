@@ -2,7 +2,7 @@ import express from 'express';
 import Gameboard from './gameboard.js';
 import Position from './position.js';
 import cors from 'cors'
-import { InvalidOperation } from './error.js';
+import { InvalidOperation } from './error/error.js';
 
 
 const app = express()
@@ -21,7 +21,12 @@ const buildPositionObject = (position) => {
     return Position(position.x, position.y)
 }
 
-app.post('/place', (req, res) => {
+app.use((req, res, next) => {
+    console.log(req.path);
+    next()
+})
+
+app.post('/place', (req, res, next) => {
     const playerId = req.body.playerId
     const shipName = req.body.shipName
     const position = buildPositionObject(req.body.position)
@@ -29,19 +34,17 @@ app.post('/place', (req, res) => {
     try {
         res.send(gameboard.placeShip(playerId, shipName, position, vertical))
     } catch (error) {
-        console.error(error.message);
-        res.status(400).json(error.message)
+        next(error)
     }
 })
-app.post('/attack', (req, res) => {
-    console.log(req.body);
+app.post('/attack', (req, res, next) => {
     const playerId = req.body.playerId
     const position = buildPositionObject(req.body.position)
     try {
         res.send(gameboard.attack(playerId, position))
     } catch (error) {
         console.error(error.message);
-        res.status(400).json(error.message)
+        next(error)
     }
 })
 
@@ -52,12 +55,22 @@ app.get('/response/:playerId', (req, res) => {
 
 app.delete('/reset', (req, res) => {
     const playerId = req.body.playerId
-    console.log(req.body);
     try {
         res.send(gameboard.resetGame(playerId))
     } catch (error) {
         console.error(error.message);
         res.status(400).json(error.message)
+    }
+})
+
+app.use((err, req, res, next) => {
+    console.error(err)
+    if (err instanceof InvalidOperation) {
+        console.log('sending 400');
+        res.status(400).json(err.message)
+    } else {
+        console.log('sending 500');
+        res.status(500).json('something broke')
     }
 })
 

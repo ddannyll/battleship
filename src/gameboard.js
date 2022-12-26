@@ -1,5 +1,5 @@
 import Cell from "./cell.js"
-import { InvalidOperation } from "./error.js"
+import { InvalidOperation, BadRequest, ApiError } from "./error/apiError"
 import Position from "./position.js"
 import { SHIP_LENGTHS, ShipBuilder, SHIP } from "./ship.js"
 
@@ -41,7 +41,7 @@ const Gameboard = () => {
         if (playerId === 2) {
             return p2board
         }
-        throw new Error('invalid id')
+        throw new BadRequest('invalid id')
     }
 
     const getEnemyBoard = (playerId) => {
@@ -106,8 +106,18 @@ const Gameboard = () => {
             throw new InvalidOperation('Must be in pregame to place ships')
         }
 
-        const board = getPlayerBoard(playerId) // throws Error if not valid playerId
-        const shipObj = ShipBuilder(shipName) // throws TypeError if not valid shipName
+        const board = getPlayerBoard(playerId) // throws BadRequest if not valid playerId
+        let shipObj
+        try {
+            shipObj = ShipBuilder(shipName) 
+        } catch (err) {
+            if (err instanceof TypeError) {
+                throw new BadRequest(err.message)
+            } else {
+                throw err
+            }
+        }
+
 
         // Confirm ship is not already placed
         if (isShipAlive(board, shipName)) {
@@ -167,11 +177,8 @@ const Gameboard = () => {
         }
         board[position.getY()][position.getX()].hit()
         
-        if (state === STATES.p1turn) {
-            state = STATES.p2turn
-        } else {
-            state = STATES.p1turn
-        }
+
+        state = state === STATES.p1turn ? STATES.p2turn : STATES.p1turn
 
         return getResponse(playerId)
     }

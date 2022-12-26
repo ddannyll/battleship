@@ -1,5 +1,5 @@
 import Cell from "./cell.js"
-import { InvalidOperation } from "./error.js"
+import { InvalidOperation, BadRequest, ApiError } from "./error/apiError"
 
 const Ship = (length, name='defaultShip') => {
     if (!Number.isInteger(length) || length < 1) {
@@ -45,7 +45,6 @@ const ShipBuilder = (name) => {
     if (!(name in nameMap)) {
         throw TypeError('Invalid ship name')
     }
-    console.log(name);
     return nameMap[name]()
 }
 
