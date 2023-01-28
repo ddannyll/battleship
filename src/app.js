@@ -44,18 +44,21 @@ app.post('/attack', (req, res, next) => {
     }
 })
 
-app.get('/response/:playerId', (req, res) => {
+app.get('/response/:playerId', (req, res, next) => {
     const playerId = parseInt(req.params.playerId)
-    res.send(gameboard.getResponse(playerId))
+    try {
+        res.send(gameboard.getResponse(playerId))
+    } catch (error) {
+        next(error)
+    }
 })
 
-app.delete('/reset', (req, res) => {
+app.delete('/reset', (req, res, next) => {
     const playerId = req.body.playerId
     try {
         res.send(gameboard.resetGame(playerId))
     } catch (error) {
-        console.error(error.message);
-        res.status(400).json(error.message)
+        next(error)
     }
 })
 
