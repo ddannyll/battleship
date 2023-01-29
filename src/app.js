@@ -69,7 +69,7 @@ app.use((err, req, res, next) => {
         res.status(400).send(err.message)
     } else {
         console.log('sending 500');
-        res.status(500).json('something broke')
+        res.status(500).send('something broke')
     }
 })
 
