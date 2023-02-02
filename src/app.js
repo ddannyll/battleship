@@ -1,14 +1,16 @@
 import express from 'express';
+import { InvalidOperation, ApiError, BadParams } from './error/apiError.js';
 import Gameboard from './gameboard.js';
 import Position from './position.js';
 import cors from 'cors'
-import { InvalidOperation, ApiError, BadParams } from './error/apiError.js';
+import MatchMaker from './matchMaker.js';
 
 
 const app = express()
 const PORT = process.env.PORT || 4200
 
 let gameboard = Gameboard()
+let matchMaker = MatchMaker()
 
 app.use(cors({
     origin: '*'
@@ -23,31 +25,51 @@ app.use((req, res, next) => {
     next()
 })
 
-app.post('/place', (req, res, next) => {
-    const playerId = req.body.playerId
+app.post('/create', (req, res, next) => {
+    try {
+        res.send(matchMaker.createGame())
+    } catch(error) {
+        next(error)
+    }
+})
+
+app.post('/join/:gameId', (req, res, next) => {
+    try {
+        res.send(matchMaker.joinGame(req.params.gameId))
+    } catch(error) {
+        next(error)
+    }
+})
+
+app.post('/place/:gameId', (req, res, next) => {
+    const gameId = req.params.gameId
+    const token = req.body.token
     const shipName = req.body.shipName
     const position = req.body.position
     const vertical = req.body.vertical || false
     try {
-        res.send(gameboard.placeShip(playerId, shipName, Position(position.x, position.y), vertical))
+        res.send(matchMaker.place(gameId, token, shipName, position?.x, position?.y, vertical))
     } catch (error) {
         next(error)
     }
 })
-app.post('/attack', (req, res, next) => {
-    const playerId = req.body.playerId
+app.post('/attack/:gameId', (req, res, next) => {
+    const gameId = req.params.gameId
+    const token = req.body.token
     const position = req.body.position
     try {
-        res.send(gameboard.attack(playerId, Position(position.x, position.y)))
+        res.send(matchMaker.attack(gameId, token, position.x, position.y))
     } catch (error) {
         next(error)
     }
 })
 
-app.get('/response/:playerId', (req, res, next) => {
-    const playerId = parseInt(req.params.playerId)
+app.get('/response/:gameId/:token', (req, res, next) => {
+    const gameId = req.params.gameId
+    const token = req.params.token
+
     try {
-        res.send(gameboard.getResponse(playerId))
+        res.send(matchMaker.getResponse(gameId, token))
     } catch (error) {
         next(error)
     }

@@ -1,11 +1,12 @@
-import { uniqueId } from "lodash"
-import { InvalidOperation } from "./error/apiError"
-import Gameboard from "./gameboard"
+import { BadParams, InvalidOperation } from "./error/apiError.js"
+import Gameboard from "./gameboard.js"
+import uniqid from 'uniqid'
+import Position from "./position.js"
 
 const MatchMaker = () => {
     const games = {}
     const isGameJoinable = (gameId) => {
-        if (!gameId in games || games[gameId].playerTwo !== undefined) {
+        if (!(gameId in games) || games[gameId].playerTwo !== undefined) {
             return false
         }
         return true
@@ -20,21 +21,21 @@ const MatchMaker = () => {
     }
 
     const createGame = () => {
-        const playerToken = uniqueId()
-        const gameId = uniqueId()
+        const playerToken = uniqid()
+        const gameId = uniqid()
         games[gameId] = {
             gameboard: Gameboard(),
             playerOne: playerToken,
             playerTwo: undefined
         }
-        wrapResponse(games[gameId].getResponse(1), playerToken, gameId)
+        return wrapResponse(games[gameId].gameboard.getResponse(1), playerToken, gameId)
     }
 
     const joinGame = (gameId) => {
-        if (!isGameJoinable) {
+        if (!isGameJoinable(gameId)) {
             throw new InvalidOperation('Game is not joinable')
         }
-        const token = uniqueId()
+        const token = uniqid()
         games[gameId].playerTwo = token
         return wrapResponse(games[gameId].gameboard.getResponse(2), token, gameId)
     }
@@ -42,7 +43,7 @@ const MatchMaker = () => {
 
     const getPlayerNumber = (gameId, token) => {
         if (!gameId in games) {
-            throw new InvalidOperation('Invalid gameId:' + gameId)
+            throw new BadParams('Invalid gameId:' + gameId)
         }
         if (games[gameId].playerOne === token) {
             return 1
@@ -50,25 +51,36 @@ const MatchMaker = () => {
         if (games[gameId].playerTwo === token) {
             return 2
         } 
-        throw new InvalidOperation('Supplied token not in specified game')
+        throw new BadParams('Supplied token not in specified game')
     }
 
-    const attack = (gameId, token, position) => {
-        const player = getPlayerNumber(gameId, token)
-        const gameboard = games[gameId].gameboard 
-        wrapResponse(gameboard.attack(player, position), token, gameId)
+    const createPositionObject = (x, y) => {
+        try {
+            return Position(x, y)
+        } catch (err) {
+            if (err instanceof TypeError) {
+                throw new BadParams('Invalid position param')
+            }
+            throw err
+        }
     }
 
-    const place = (gameId, token, shipName, position, vertical=false) => {
+    const attack = (gameId, token, x, y) => {
         const player = getPlayerNumber(gameId, token)
         const gameboard = games[gameId].gameboard 
-        wrapResponse(gameboard.place(player, shipName, position, vertical), token, gameId)
+        return wrapResponse(gameboard.attack(player, createPositionObject(x, y)), token, gameId)
+    }
+
+    const place = (gameId, token, shipName, x, y, vertical=false) => {
+        const player = getPlayerNumber(gameId, token)
+        const gameboard = games[gameId].gameboard 
+        return wrapResponse(gameboard.place(player, shipName, createPositionObject(x, y), vertical), token, gameId)
     }
 
     const getResponse = (gameId, token) => {
         const player = getPlayerNumber(gameId, token)
         const gameboard = games[gameId].gameboard
-        wrapResponse(gameboard.getResponse(player), token, gameId)
+        return wrapResponse(gameboard.getResponse(player), token, gameId)
     }
 
 
