@@ -42,7 +42,7 @@ const MatchMaker = () => {
 
 
     const getPlayerNumber = (gameId, token) => {
-        if (!gameId in games) {
+        if (!(gameId in games)) {
             throw new BadParams('Invalid gameId:' + gameId)
         }
         if (games[gameId].playerOne === token) {
@@ -74,7 +74,7 @@ const MatchMaker = () => {
     const place = (gameId, token, shipName, x, y, vertical=false) => {
         const player = getPlayerNumber(gameId, token)
         const gameboard = games[gameId].gameboard 
-        return wrapResponse(gameboard.place(player, shipName, createPositionObject(x, y), vertical), token, gameId)
+        return wrapResponse(gameboard.placeShip(player, shipName, createPositionObject(x, y), vertical), token, gameId)
     }
 
     const getResponse = (gameId, token) => {

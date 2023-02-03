@@ -1,7 +1,6 @@
 import express from 'express';
 import { InvalidOperation, ApiError, BadParams } from './error/apiError.js';
 import Gameboard from './gameboard.js';
-import Position from './position.js';
 import cors from 'cors'
 import MatchMaker from './matchMaker.js';
 
@@ -64,9 +63,9 @@ app.post('/attack/:gameId', (req, res, next) => {
     }
 })
 
-app.get('/response/:gameId/:token', (req, res, next) => {
+app.get('/response/:gameId', (req, res, next) => {
     const gameId = req.params.gameId
-    const token = req.params.token
+    const token = req.query.token
 
     try {
         res.send(matchMaker.getResponse(gameId, token))
@@ -85,11 +84,11 @@ app.delete('/reset', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    console.error(err)
     if (err instanceof ApiError) {
         console.log('sending 400: ' + err.message);
         res.status(400).send(err.message)
     } else {
+        console.error(err)
         console.log('sending 500');
         res.status(500).send('something broke')
     }
