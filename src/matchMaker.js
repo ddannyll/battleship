@@ -20,10 +20,19 @@ const MatchMaker = () => {
     }
 
     const wrapResponse = (response, token, gameId) => {
+        let winner = null
+        if (response.winner) {
+            if (response.winner === getPlayerNumber(gameId, token)) {
+                winner = true
+            } else {
+                winner = false
+            }
+        }
         return {
             ...response,
             token,
-            gameId
+            gameId,
+            winner
         }
     }
 
