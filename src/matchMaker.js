@@ -12,6 +12,13 @@ const MatchMaker = () => {
         return true
     }
 
+    const isTokenInGame = (gameId, token) => {
+        if (!(gameId in games) || (games[gameId].playerOne !== token && games[gameId].playerTwo !== token)) {
+            return false
+        }
+        return true
+    }
+
     const wrapResponse = (response, token, gameId) => {
         return {
             ...response,
@@ -31,13 +38,17 @@ const MatchMaker = () => {
         return wrapResponse(games[gameId].gameboard.getResponse(1), playerToken, gameId)
     }
 
-    const joinGame = (gameId) => {
+    const joinGame = (gameId, token) => {
+        // Check if player token is already in the game
+        if (isTokenInGame(gameId, token)) {
+            return wrapResponse(games[gameId].gameboard.getResponse(getPlayerNumber(gameId, token)), token, gameId)
+        }
         if (!isGameJoinable(gameId)) {
             throw new InvalidOperation('Game is not joinable')
         }
-        const token = uniqid()
-        games[gameId].playerTwo = token
-        return wrapResponse(games[gameId].gameboard.getResponse(2), token, gameId)
+        const newToken = uniqid()
+        games[gameId].playerTwo = newToken
+        return wrapResponse(games[gameId].gameboard.getResponse(2), newToken, gameId)
     }
 
 
