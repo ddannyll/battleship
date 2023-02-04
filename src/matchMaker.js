@@ -27,32 +27,46 @@ const MatchMaker = () => {
         }
     }
 
-    const createGame = () => {
-        const playerToken = uniqid()
+    const checkToken = (token) => {
+        if (!token) {
+            throw new BadParams('Token must be supplied')
+        }
+    }
+
+    const createToken = () => {
+        return {token: uniqid()}
+    }
+
+    const createGame = (token) => {
         const gameId = uniqid()
         games[gameId] = {
             gameboard: Gameboard(),
-            playerOne: playerToken,
+            playerOne: token,
             playerTwo: null
         }
-        return wrapResponse(games[gameId].gameboard.getResponse(1), playerToken, gameId)
+        return wrapResponse(games[gameId].gameboard.getResponse(1), token, gameId)
     }
 
     const joinGame = (gameId, token) => {
         // Check if player token is already in the game
+        if (!token) {
+            throw new BadParams('Token was not supplied')
+        }
         if (isTokenInGame(gameId, token)) {
             return wrapResponse(games[gameId].gameboard.getResponse(getPlayerNumber(gameId, token)), token, gameId)
         }
         if (!isGameJoinable(gameId)) {
             throw new InvalidOperation('Game is not joinable')
         }
-        const newToken = uniqid()
-        games[gameId].playerTwo = newToken
-        return wrapResponse(games[gameId].gameboard.getResponse(2), newToken, gameId)
+       
+        games[gameId].playerTwo = token
+        console.log(games);
+        return wrapResponse(games[gameId].gameboard.getResponse(2), token, gameId)
     }
 
 
     const getPlayerNumber = (gameId, token) => {
+        checkToken(token)
         if (!(gameId in games)) {
             throw new BadParams('Invalid gameId:' + gameId)
         }
@@ -95,7 +109,7 @@ const MatchMaker = () => {
     }
 
 
-    return {attack, place, getResponse, createGame, joinGame}
+    return {attack, place, getResponse, createGame, joinGame, createToken}
 
 }
 

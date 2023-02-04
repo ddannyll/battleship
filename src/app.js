@@ -20,13 +20,13 @@ app.use(express.json({
 
 
 app.use((req, res, next) => {
-    console.log(req.path);
+    console.log(req.path + ' ' + req.body.token);
     next()
 })
 
 app.post('/create', (req, res, next) => {
     try {
-        res.send(matchMaker.createGame())
+        res.send(matchMaker.createGame(req.body.token))
     } catch(error) {
         next(error)
     }
@@ -69,6 +69,14 @@ app.get('/response/:gameId', (req, res, next) => {
 
     try {
         res.send(matchMaker.getResponse(gameId, token))
+    } catch (error) {
+        next(error)
+    }
+})
+
+app.post('/token', (req, res, next) => {
+    try {
+        res.send(matchMaker.createToken())
     } catch (error) {
         next(error)
     }
