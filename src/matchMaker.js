@@ -75,7 +75,7 @@ const MatchMaker = () => {
         if (games[gameId].playerTwo === token) {
             return 2
         } 
-        throw new BadParams('Supplied token not in specified game')
+        throw new BadParams('Supplied token not in specified game: ' + token + ` ${JSON.stringify(games[gameId])}`)
     }
 
     const createPositionObject = (x, y) => {
