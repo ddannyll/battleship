@@ -178,7 +178,8 @@ const Gameboard = () => {
         if (!isPositionOnBoard) {
             throw new InvalidOperation('Invalid Position')
         }
-        board[position.getY()][position.getX()].hit()
+
+        const hitShip = board[position.getY()][position.getX()].hit()
 
         // check for winner
         if (Object.keys(SHIP)
@@ -186,7 +187,7 @@ const Gameboard = () => {
             .every(alive => !alive)) {
             winner = playerId
             state = STATES.finish
-        } else {
+        } else if (!hitShip) {
             state = state === STATES.p1turn ? STATES.p2turn : STATES.p1turn
         }
         

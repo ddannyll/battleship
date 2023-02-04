@@ -10,10 +10,12 @@ const Cell = (ship=null) => {
         if (isHit()) {
             throw new InvalidOperation('Cannot hit an already hit cell')
         }
+        hasBeenHit = true
         if (ship !== null && 'hit' in ship && typeof ship.hit === 'function') {
             ship.hit()
+            return true
         }
-        hasBeenHit = true
+        return false
     }
     const addShip = (shipObject) => {
         if (ship !== null) {
