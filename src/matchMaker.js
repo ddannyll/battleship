@@ -60,7 +60,6 @@ const MatchMaker = () => {
         }
        
         games[gameId].playerTwo = token
-        console.log(games);
         return wrapResponse(games[gameId].gameboard.getResponse(2), token, gameId)
     }
 
