@@ -34,7 +34,7 @@ app.post('/create', (req, res, next) => {
 
 app.post('/join/:gameId', (req, res, next) => {
     try {
-        res.send(matchMaker.joinGame(req.params.gameId))
+        res.send(matchMaker.joinGame(req.params.gameId, req.body.token))
     } catch(error) {
         next(error)
     }

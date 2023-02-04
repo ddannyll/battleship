@@ -6,17 +6,17 @@ import Position from "./position.js"
 const MatchMaker = () => {
     const games = {}
     const isGameJoinable = (gameId) => {
-        if (!(gameId in games) || games[gameId].playerTwo !== undefined) {
+        if (!(gameId in games) || games[gameId].playerTwo !== null) {
             return false
         }
         return true
     }
 
     const isTokenInGame = (gameId, token) => {
-        if (!(gameId in games) || (games[gameId].playerOne !== token && games[gameId].playerTwo !== token)) {
-            return false
+        if (gameId in games && (games[gameId].playerOne === token || games[gameId].playerTwo === token)) {
+            return true
         }
-        return true
+        return false
     }
 
     const wrapResponse = (response, token, gameId) => {
@@ -33,7 +33,7 @@ const MatchMaker = () => {
         games[gameId] = {
             gameboard: Gameboard(),
             playerOne: playerToken,
-            playerTwo: undefined
+            playerTwo: null
         }
         return wrapResponse(games[gameId].gameboard.getResponse(1), playerToken, gameId)
     }
