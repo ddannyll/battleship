@@ -195,7 +195,6 @@ const Gameboard = () => {
     }
 
     const getResponse = (playerId) => {
-        const board = getPlayerBoard(playerId)
 
         let responseState
         if (state === STATES.pregame) {
@@ -206,62 +205,49 @@ const Gameboard = () => {
             responseState = 'finish'
         }
 
-        const response = {
-            board: {
+        
+        const buildResponseBoard = (board, doShips=true) => {
+            let responseBoard = {
                 shells: [],
                 ships: {}
-            },
-            enemyBoard: {
-                shells:[]
-            },
+            }
+            board.forEach((col, y) => {
+                col.forEach((cell, x) => {
+                    if (cell.isHit()) {
+                        responseBoard.shells.push({
+                            x,
+                            y,
+                            hitShip: cell.hasShip()
+                        })
+                    }
+                    if (doShips) {
+                        const ship = cell.getShip()
+                        if (ship !== null) {
+                            let responseShip
+                            if (responseBoard.ships[ship.getName()] === undefined) {
+                                responseBoard.ships[ship.getName()] = {positions:[]}
+                            }
+                            responseShip = responseBoard.ships[ship.getName()]
+                            responseShip.alive = !ship.isSunk()
+                            responseShip.positions.push({
+                                x,
+                                y
+                            })
+                        }
+                    }
+                })
+            })
+            return responseBoard
+        }
+
+        const response = {
+            board: buildResponseBoard(getPlayerBoard(playerId)),
+            enemyBoard: buildResponseBoard(getEnemyBoard(playerId), state === STATES.finish),
             playerId: playerId,
             attackTurn: playerId === state,
-            // TODO:  want to change later for player ids other than 1 or 2
             state: responseState,
             winner: winner
         }
-
-        // Go through player board and create response
-        board.forEach((col, y) => {
-            col.forEach((cell, x) => {
-                // Shell object
-                if (cell.isHit()) {
-                    response.board.shells.push({
-                        x: x,
-                        y: y,
-                        hitShip: cell.hasShip()
-                    })
-                }
-                // Ships object
-                const ship = cell.getShip()
-                if (ship !== null) {
-                    let responseShip
-                    if (response.board.ships[ship.getName()] === undefined) {
-                        response.board.ships[ship.getName()] = {positions:[]}
-                    }
-                    responseShip = response.board.ships[ship.getName()]
-                    responseShip.alive = !ship.isSunk()
-                    responseShip.positions.push({
-                        x: x,
-                        y: y
-                    })
-                }
-            })
-        })
-
-        // Repeat for enemy board
-        const enemyBoard = getEnemyBoard(playerId) 
-        enemyBoard.forEach((col, y) => {
-            col.forEach((cell, x) => {
-                if (cell.isHit()) {
-                    response.enemyBoard.shells.push({
-                        x: x,
-                        y: y,
-                        hitShip: cell.hasShip()
-                    })
-                }
-            })
-        })
 
         return response
     }
