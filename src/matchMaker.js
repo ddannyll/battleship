@@ -46,6 +46,8 @@ const MatchMaker = () => {
         return {token: uniqid()}
     }
 
+
+
     const createGame = (token) => {
         const gameId = uniqid()
         games[gameId] = {
@@ -53,6 +55,10 @@ const MatchMaker = () => {
             playerOne: token,
             playerTwo: null
         }
+        setTimeout(() => {
+            delete games[gameId]; 
+            console.log("- automatically deleting game: " + gameId);
+        }, 3600000)
         return wrapResponse(games[gameId].gameboard.getResponse(1), token, gameId)
     }
 
