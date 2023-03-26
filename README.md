@@ -11,7 +11,3 @@ Created using Express.js
 - Safe, tokens are generated for each user which allows them to access only the data they are authorised to see 
 - Error handling, invalid operations and bad paramters are sent back to the front end accordingly
 
-## Endpoints
-```
-will document later
-```
